@@ -1,2 +1,2 @@
-SKU ID	Product Name	Quantity	Price	Category	Location	Sub Location	Odoo Link	PoC	Colours
-101	TestBP	99	100	BackPack	Cellar	Row 3	blank	Zahir Bhai	"Teal, Blue"
+﻿SKU ID,Product Name,Quantity,Price,Category,Location,Sub Location,Odoo Link,PoC,Colours
+101,TestBP,99,100,BackPack,Cellar,Row 3,blank,Zahir Bhai,"Teal, Blue"
