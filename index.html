@@ -1,16 +1,117 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Inventory Scanner</title>
+  <meta charset="UTF-8" />
+  <title>Product Lookup</title>
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    input, button {
+      padding: 10px;
+      margin: 5px;
+      font-size: 16px;
+    }
+    #reader {
+      width: 100%;
+      max-width: 400px;
+      margin: auto;
+    }
+    .product-details {
+      border: 1px solid #ccc;
+      margin-top: 20px;
+      padding: 10px;
+    }
+    .product-details h3 {
+      margin-bottom: 10px;
+    }
+    .product-details p {
+      margin: 4px 0;
+    }
+  </style>
 </head>
 <body>
-  <h2>Scan Barcode</h2>
-  <div id="reader" style="width: 300px;"></div>
-  <div id="result"></div>
 
-  <script src="script.js"></script>
+  <h2>Product Lookup</h2>
+
+  <div>
+    <input type="text" id="skuInput" placeholder="Enter SKU ID or scan" />
+    <button onclick="startScan()">Scan</button>
+    <button onclick="searchProduct()">Search</button>
+  </div>
+
+  <div id="reader" style="display:none;"></div>
+
+  <div id="result" class="product-details"></div>
+
+  <script>
+    let products = {};
+
+    // Load CSV into memory
+    fetch("products.csv")
+      .then(res => res.text())
+      .then(data => {
+        const rows = data.trim().split("\n");
+        const headers = rows[0].split(",").map(h => h.trim().toLowerCase());
+        rows.slice(1).forEach(row => {
+          const values = row.split(",").map(v => v.trim());
+          const item = {};
+          headers.forEach((h, i) => item[h] = values[i]);
+          products[item["sku id"]] = item;
+        });
+      });
+
+    // Show product details
+    function displayProduct(product) {
+      const out = document.getElementById("result");
+      if (!product) {
+        out.innerHTML = `<p style="color:red;">Product not found.</p>`;
+        return;
+      }
+
+      out.innerHTML = `
+        <h3>Product Details</h3>
+        <p><strong>SKU ID:</strong> ${product["sku id"]}</p>
+        <p><strong>Product Name:</strong> ${product["product name"]}</p>
+        <p><strong>Quantity:</strong> ${product["quantity"]}</p>
+        <p><strong>Price:</strong> ${product["price"]}</p>
+        <p><strong>Category:</strong> ${product["category"]}</p>
+        <p><strong>Location:</strong> ${product["location"]}</p>
+        <p><strong>Sub Location:</strong> ${product["sub location"]}</p>
+        <p><strong>PoC:</strong> ${product["poc"]}</p>
+        <p><strong>Colours:</strong> ${product["colours"]}</p>
+        <p><strong>Odoo Link:</strong> <a href="${product["odoo link"]}" target="_blank">Open in Odoo</a></p>
+      `;
+    }
+
+    // Search button logic
+    function searchProduct() {
+      const sku = document.getElementById("skuInput").value.trim();
+      if (sku) displayProduct(products[sku]);
+    }
+
+    // Start QR/barcode scanner
+    function startScan() {
+      const reader = new Html5Qrcode("reader");
+      document.getElementById("reader").style.display = "block";
+      reader.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        (decodedText) => {
+          reader.stop().then(() => {
+            document.getElementById("reader").style.display = "none";
+            document.getElementById("skuInput").value = decodedText;
+            displayProduct(products[decodedText]);
+          });
+        },
+        (error) => { /* ignore */ }
+      );
+    }
+  </script>
+
 </body>
 </html>
