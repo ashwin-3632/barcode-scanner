@@ -1,7 +1,7 @@
 let inventory = {};
 
 function loadCSV() {
-  fetch('products.csv')
+  fetch('https://docs.google.com/spreadsheets/d/1uRfF_5u6pWDVgu9jH4cbxPBB7AvF6j8K5FMSwt8Myvo/export?format=csv')
     .then(response => response.text())
     .then(csv => {
       let lines = csv.trim().split('\n');
