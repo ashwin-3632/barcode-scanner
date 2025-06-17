@@ -1,0 +1,14 @@
+body {
+  font-family: Arial;
+  text-align: center;
+  padding: 20px;
+}
+
+#reader {
+  margin: auto;
+  border: 1px solid #ccc;
+}
+
+#result {
+  margin-top: 20px;
+}
